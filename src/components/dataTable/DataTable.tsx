@@ -6,6 +6,7 @@ const StyledDataTable = styled.div`
 
   tr {
     width: 100%;
+    // background: blue;
   }
 
   table {
@@ -22,6 +23,10 @@ const StyledDataTable = styled.div`
   }
   .string {
     text-align: left;
+  }
+
+  .selected {
+    background: blue;
   }
 
   th {
@@ -73,7 +78,7 @@ const StyledDataTable = styled.div`
       white-space: wrap;
       text-overflow: unset;
       overflow: show;
-      text-align: left;
+      text-align: right;
     }
 
     #no-more-tables td:before {
@@ -119,16 +124,36 @@ const DataTable = ({ rowData, columns }: Props) => {
   const HeaderRow = () => {
     return (
       <tr>
-        {columns.map((key) => {
+        {columns.map((key, index) => {
           console.log(getClassName(key.type));
           return (
-            <th className={getClassName(key.type)} headers={key.field}>
+            <th
+              key={index}
+              className={getClassName(key.type)}
+              headers={key.field}
+            >
               {key.columnName}
             </th>
           );
         })}
       </tr>
     );
+  };
+
+  const getRowData = (test: any) => {
+    console.log(test);
+  };
+
+  const getCellData = (test: any) => {
+    console.log(test);
+  };
+
+  const highlightCell = (element: HTMLElement) => {
+    const currentSelected = document.getElementsByClassName("selected");
+    Array.from(currentSelected).forEach((e) => {
+      e.classList.remove("selected");
+    });
+    element.classList.add("selected");
   };
 
   const DataRows = () => {
@@ -138,7 +163,12 @@ const DataTable = ({ rowData, columns }: Props) => {
       <>
         {rowData.map((row: any, index: number) => {
           return (
-            <tr key={index}>
+            <tr
+              key={index}
+              onClick={() => {
+                getRowData(row);
+              }}
+            >
               {columns.map((col: GridColDef) => {
                 return (
                   <td
@@ -146,6 +176,10 @@ const DataTable = ({ rowData, columns }: Props) => {
                     key={col.field}
                     data-title={col.columnName}
                     style={{ width: `${(col.flex / totalWidth) * 100}%` }}
+                    onClick={(e: any) => {
+                      getCellData({ [col.field]: row[col.field] });
+                      highlightCell(e.currentTarget);
+                    }}
                   >
                     {row[col.field]}
                   </td>
